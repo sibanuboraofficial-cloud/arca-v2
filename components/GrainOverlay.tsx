@@ -1,15 +1,41 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 export default function GrainOverlay() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const size = 128;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const imageData = ctx.createImageData(size, size);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const v = Math.random() * 255;
+      data[i] = v;
+      data[i + 1] = v;
+      data[i + 2] = v;
+      data[i + 3] = 12; // very low alpha per pixel
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+  }, []);
+
   return (
-    <div
-      className="pointer-events-none fixed inset-0 z-[9000]"
+    <canvas
+      ref={canvasRef}
+      className="pointer-events-none fixed inset-0 z-[9000] h-full w-full opacity-[0.4]"
       style={{
-        opacity: 0.04,
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        backgroundRepeat: "repeat",
-        backgroundSize: "128px 128px",
-        animation: "grain 8s steps(10) infinite",
+        imageRendering: "pixelated",
+        mixBlendMode: "overlay",
       }}
     />
   );

@@ -29,27 +29,22 @@ export default function CustomCursor() {
 
   return (
     <>
+      {/* Dot */}
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[9999] rounded-full"
+        className="pointer-events-none fixed top-0 left-0 z-[9999] rounded-full bg-red"
         style={{
-          width: 10,
-          height: 10,
-          backgroundColor: "#e63946",
-          x: pos.x - 5,
-          y: pos.y - 5,
+          width: 8,
+          height: 8,
+          x: pos.x - 4,
+          y: pos.y - 4,
         }}
       />
+      {/* Ring */}
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[9998] rounded-full border border-[#e63946]/50"
-        animate={{
-          x: pos.x - 20,
-          y: pos.y - 20,
-        }}
-        transition={{ type: "spring", damping: 25, stiffness: 200, mass: 0.5 }}
-        style={{
-          width: 40,
-          height: 40,
-        }}
+        className="pointer-events-none fixed top-0 left-0 z-[9998] rounded-full border border-red/40"
+        animate={{ x: pos.x - 18, y: pos.y - 18 }}
+        transition={{ type: "spring", damping: 28, stiffness: 220, mass: 0.5 }}
+        style={{ width: 36, height: 36 }}
       />
     </>
   );

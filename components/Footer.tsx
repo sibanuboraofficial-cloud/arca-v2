@@ -3,6 +3,8 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 
+const ease = [0.16, 1, 0.3, 1] as const;
+
 export default function Footer() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
@@ -18,36 +20,52 @@ export default function Footer() {
   };
 
   return (
-    <footer id="waitlist" ref={ref} className="relative border-t border-card-border">
-      {/* CTA Section */}
-      <div className="px-8 py-32 md:px-16 lg:px-24">
+    <footer
+      id="waitlist"
+      ref={ref}
+      className="relative z-[1] border-t border-white/[0.04]"
+    >
+      <div className="px-8 py-36 md:px-16 md:py-44 lg:px-24 xl:px-32">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 50 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1, ease: [0.25, 0.1, 0, 1] }}
-          className="mx-auto max-w-2xl text-center"
+          transition={{ duration: 1.2, ease }}
+          className="mx-auto max-w-3xl text-center"
         >
-          <h2 className="font-serif text-5xl font-bold text-foreground md:text-7xl">
-            Join the waitlist
+          <span className="text-[11px] font-medium uppercase tracking-[0.3em] text-muted/50">
+            Early access
+          </span>
+
+          <h2 className="mt-8 font-serif text-5xl font-bold leading-[0.9] tracking-tight text-foreground md:text-7xl lg:text-8xl">
+            Join the
+            <br />
+            <span className="italic text-red">waitlist.</span>
           </h2>
-          <p className="mt-6 text-base text-secondary">
+
+          <p className="mx-auto mt-8 max-w-md text-base leading-[1.8] text-muted/60">
             Be the first to experience meetings that handle themselves.
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-10 flex flex-col gap-3 sm:flex-row">
+          <form
+            onSubmit={handleSubmit}
+            className="mx-auto mt-12 flex max-w-lg flex-col gap-3 sm:flex-row"
+          >
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com"
               required
-              className="flex-1 rounded-full border border-card-border bg-card-bg px-6 py-3.5 text-sm text-foreground placeholder:text-secondary/50 outline-none transition-all duration-300 focus:border-red/40 focus:ring-1 focus:ring-red/20"
+              className="flex-1 rounded-full border border-white/[0.06] bg-white/[0.03] px-6 py-4 text-sm text-foreground backdrop-blur-xl placeholder:text-muted/30 outline-none transition-all duration-500 focus:border-red/30 focus:bg-white/[0.05] focus:shadow-[0_0_40px_rgba(230,57,70,0.08)]"
             />
             <button
               type="submit"
-              className="rounded-full bg-red px-8 py-3.5 text-sm font-medium text-white transition-all duration-300 hover:bg-red/80 hover:shadow-[0_0_40px_rgba(230,57,70,0.3)]"
+              className="group relative overflow-hidden rounded-full bg-red px-8 py-4 text-sm font-medium text-white transition-all duration-500 hover:shadow-[0_0_50px_rgba(230,57,70,0.4)]"
             >
-              {submitted ? "You're in!" : "Get Early Access"}
+              <span className="relative z-10">
+                {submitted ? "You\u2019re in" : "Get Early Access"}
+              </span>
+              <span className="absolute inset-0 bg-white/0 transition duration-500 group-hover:bg-white/[0.12]" />
             </button>
           </form>
 
@@ -55,7 +73,8 @@ export default function Footer() {
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-4 text-sm text-red"
+              transition={{ duration: 0.6, ease }}
+              className="mt-6 text-sm text-red/80"
             >
               Welcome to the waitlist. We&apos;ll be in touch.
             </motion.p>
@@ -63,26 +82,25 @@ export default function Footer() {
         </motion.div>
       </div>
 
-      {/* Bottom footer */}
-      <div className="border-t border-card-border px-8 py-8 md:px-16 lg:px-24">
+      {/* Bottom bar */}
+      <div className="border-t border-white/[0.04] px-8 py-8 md:px-16 lg:px-24 xl:px-32">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex items-center gap-8">
-            <span className="font-serif text-xl font-bold tracking-[0.2em] text-foreground">
+            <span className="font-serif text-lg font-bold tracking-[0.25em] text-foreground/70">
               ARCA
             </span>
-            <span className="text-xs text-secondary">
+            <span className="text-[11px] text-muted/30">
               &copy; {new Date().getFullYear()} Arca. Designed by Sibanu Bora.
             </span>
           </div>
-
-          <div className="flex items-center gap-6">
-            {["Twitter", "LinkedIn", "GitHub"].map((social) => (
+          <div className="flex items-center gap-8">
+            {["Twitter", "LinkedIn", "GitHub"].map((s) => (
               <a
-                key={social}
+                key={s}
                 href="#"
-                className="text-xs text-secondary transition-colors duration-300 hover:text-foreground"
+                className="text-[11px] uppercase tracking-[0.15em] text-muted/30 transition-colors duration-500 hover:text-foreground"
               >
-                {social}
+                {s}
               </a>
             ))}
           </div>
