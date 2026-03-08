@@ -111,7 +111,7 @@ function ProductCard() {
       initial={{ opacity: 0, x: 60 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.9, ease, delay: 0.8 }}
-      className="w-full shrink-0 md:max-w-[480px] md:w-[44%]"
+      className="w-full shrink-0 px-4 md:max-w-[576px] md:w-[52.8%] md:px-0"
     >
       <motion.div
         animate={{ y: [0, -6, 0] }}
@@ -125,9 +125,9 @@ function ProductCard() {
       >
         <div className="glow-border-inner overflow-hidden">
 
-        <div className="flex flex-col lg:flex-row">
+        <div className="flex flex-col md:flex-row">
           {/* Left side — main content */}
-          <div className="p-7 lg:w-[60%]">
+          <div className="p-5 md:p-7 md:w-[60%]">
             {/* Header */}
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-white/40">
@@ -160,21 +160,21 @@ function ProductCard() {
               {items.map((item) => (
                 <div
                   key={item.label}
-                  className={`group/item flex items-start gap-3 rounded-lg border-l-2 border-l-transparent px-3 py-2.5 transition-all duration-200 hover:bg-white/[0.05] ${item.borderColor}`}
+                  className={`group/item rounded-lg border-l-2 border-l-transparent px-3 py-2.5 transition-all duration-200 hover:bg-white/[0.05] ${item.borderColor}`}
                 >
-                  <div
-                    className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${item.color}`}
-                  />
-                  <div>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`h-2 w-2 shrink-0 rounded-full ${item.color}`}
+                    />
                     <span
                       className={`text-[11px] font-semibold uppercase tracking-wide ${item.textColor}`}
                     >
                       {item.label}
                     </span>
-                    <p className="mt-0.5 text-[14px] leading-[1.6] text-white/70 transition-colors duration-200 group-hover/item:text-white">
-                      {item.text}
-                    </p>
                   </div>
+                  <p className="mt-0.5 pl-4 text-[14px] leading-[1.6] text-white/70 transition-colors duration-200 group-hover/item:text-white">
+                    {item.text}
+                  </p>
                 </div>
               ))}
             </div>
@@ -200,8 +200,8 @@ function ProductCard() {
             </div>
           </div>
 
-          {/* Right side — rotating sidebar */}
-          <div className="flex items-center justify-center border-t border-white/[0.06] p-4 lg:w-[40%] lg:border-l lg:border-t-0 lg:p-6">
+          {/* Right side — rotating sidebar (hidden on mobile) */}
+          <div className="hidden items-center justify-center border-t border-white/[0.06] p-4 md:flex md:w-[40%] md:border-l md:border-t-0 md:p-6">
             <div className="relative h-[110px] w-full">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -346,23 +346,23 @@ export default function Hero() {
       />
 
       {/* Two-column layout */}
-      <div className="relative z-[2] flex w-full flex-col items-center gap-16 px-10 md:flex-row md:justify-between md:gap-12 md:px-20 lg:px-28 xl:px-36">
+      <div className="relative z-[2] flex w-full flex-col items-center gap-10 px-6 md:flex-row md:justify-between md:gap-12 md:px-20 lg:px-28 xl:px-36">
         {/* Left — text content */}
         <motion.div
           initial="hidden"
           animate="show"
-          className="w-full md:w-[55%]"
+          className="w-full pt-20 md:w-[55%] md:pt-0"
         >
           {/* Social proof pill */}
           <motion.div
             variants={rise(0.1)}
-            className="mb-10 flex w-fit items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.03] px-5 py-2 backdrop-blur-xl"
+            className="mb-8 flex w-fit items-center gap-2.5 rounded-full border border-white/[0.06] bg-white/[0.03] px-4 py-1.5 backdrop-blur-xl md:mb-10 md:gap-3 md:px-5 md:py-2"
           >
             <div className="flex">
               {["SB", "MK", "JC", "AP"].map((initials, i) => (
                 <div
                   key={initials}
-                  className={`relative flex h-[34px] w-[34px] items-center justify-center rounded-full text-[11px] font-semibold${i > 0 ? " -ml-3" : ""}`}
+                  className={`relative flex h-[28px] w-[28px] items-center justify-center rounded-full text-[10px] font-semibold md:h-[34px] md:w-[34px] md:text-[11px]${i > 0 ? " -ml-2.5 md:-ml-3" : ""}`}
                   style={{
                     zIndex: (i + 1) * 10,
                     backgroundColor: "#1a1a1a",
@@ -387,7 +387,7 @@ export default function Hero() {
             <div className="overflow-visible">
               <motion.h1
                 variants={rise(0.25)}
-                className="font-serif text-[clamp(42px,7vw,90px)] font-bold leading-[1.15] tracking-[-0.03em] text-foreground"
+                className="font-serif text-[clamp(36px,8vw,90px)] font-bold leading-[1.15] tracking-[-0.03em] text-foreground"
               >
                 Your meetings,
               </motion.h1>
@@ -395,7 +395,7 @@ export default function Hero() {
             <div className="overflow-visible">
               <motion.h1
                 variants={rise(0.4)}
-                className="pb-2 font-serif text-[clamp(42px,7vw,90px)] font-bold italic leading-[1.15] tracking-[-0.03em] text-red"
+                className="pb-2 font-serif text-[clamp(36px,8vw,90px)] font-bold italic leading-[1.15] tracking-[-0.03em] text-red"
               >
                 already done.
               </motion.h1>
@@ -405,7 +405,7 @@ export default function Hero() {
           {/* Subtitle */}
           <motion.p
             variants={rise(0.55)}
-            className="mt-8 max-w-md text-base leading-[1.8] text-muted md:text-lg"
+            className="mt-6 max-w-md text-sm leading-[1.8] text-muted md:mt-8 md:text-lg"
           >
             Arca captures, summarizes, and delivers action items — before you
             close the tab.
@@ -414,18 +414,18 @@ export default function Hero() {
           {/* CTAs */}
           <motion.div
             variants={rise(0.7)}
-            className="mt-10 flex flex-wrap items-center gap-4"
+            className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4 md:mt-10"
           >
             <a
               href="#waitlist"
-              className="group relative overflow-hidden rounded-full bg-red px-8 py-3.5 text-sm font-medium text-white shadow-[0_0_30px_rgba(230,57,70,0.4)] transition-all duration-500 hover:shadow-[0_0_50px_rgba(230,57,70,0.6)]"
+              className="group relative overflow-hidden rounded-full bg-red px-8 py-3.5 text-center text-sm font-medium text-white shadow-[0_0_30px_rgba(230,57,70,0.4)] transition-all duration-500 hover:shadow-[0_0_50px_rgba(230,57,70,0.6)]"
             >
               <span className="relative z-10">Get Early Access</span>
               <span className="absolute inset-0 bg-white/0 transition duration-500 group-hover:bg-white/[0.12]" />
             </a>
             <a
               href="#how-it-works"
-              className="rounded-full border border-white/[0.1] bg-white/[0.03] px-8 py-3.5 text-sm font-medium text-foreground/80 backdrop-blur-xl transition-all duration-500 hover:border-white/[0.2] hover:bg-white/[0.06]"
+              className="rounded-full border border-white/[0.1] bg-white/[0.03] px-8 py-3.5 text-center text-sm font-medium text-foreground/80 backdrop-blur-xl transition-all duration-500 hover:border-white/[0.2] hover:bg-white/[0.06]"
             >
               See how it works
             </a>
@@ -441,7 +441,7 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-8 left-1/2 z-[2] flex -translate-x-1/2 flex-col items-center"
+        className="absolute bottom-8 left-1/2 z-[2] flex -translate-x-1/2 scale-75 flex-col items-center md:scale-100"
       >
         <span
           className="mb-2 text-[10px] font-medium uppercase"

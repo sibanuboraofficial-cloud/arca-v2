@@ -64,7 +64,7 @@ export default function Navbar() {
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 1, ease }}
-      className={`fixed top-4 left-0 right-0 z-[1000] flex h-[72px] items-center justify-between px-10 transition-all duration-[400ms] ease-out md:px-20 lg:px-28 xl:px-36 ${
+      className={`fixed top-4 left-0 right-0 z-[1000] flex h-[56px] items-center justify-between px-6 transition-all duration-[400ms] ease-out md:h-[72px] md:px-20 lg:px-28 xl:px-36 ${
         scrolled
           ? "border-b border-white/[0.05] bg-[#050508]/80 backdrop-blur-2xl"
           : ""
@@ -95,7 +95,7 @@ export default function Navbar() {
       <div className="flex items-center gap-4">
         <a
           href="#waitlist"
-          className="group relative overflow-hidden rounded-full bg-red px-6 py-2.5 text-[13px] font-medium text-white transition-all duration-500 hover:shadow-[0_0_40px_rgba(230,57,70,0.35)]"
+          className="group relative hidden overflow-hidden rounded-full bg-red px-6 py-2.5 text-[13px] font-medium text-white transition-all duration-500 hover:shadow-[0_0_40px_rgba(230,57,70,0.35)] md:inline-flex"
         >
           <span className="relative z-10">Get Early Access</span>
           <span className="absolute inset-0 bg-white/0 transition-all duration-500 group-hover:bg-white/[0.12]" />
