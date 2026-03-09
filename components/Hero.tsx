@@ -39,18 +39,20 @@ const items = [
   },
 ];
 
+
+
 function SidebarWidget({ index }: { index: number }) {
   if (index === 0) {
     return (
       <div className="flex flex-col items-center gap-2.5 text-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/15">
-          <svg className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg className="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="text-[14px] font-medium text-white">Summary sent</p>
-        <p className="text-[11px] text-white/50">Delivered to inbox</p>
-        <p className="text-[10px] text-white/30">Just now</p>
+        <p className="text-[13px] font-semibold tracking-[-0.01em] text-white">Summary sent</p>
+        <p className="text-[11px] text-white/40">Delivered to inbox</p>
+        <p className="text-[10px] text-white/25">Just now</p>
       </div>
     );
   }
@@ -60,8 +62,8 @@ function SidebarWidget({ index }: { index: number }) {
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red/15">
           <div className="h-3 w-3 animate-pulse rounded-full bg-red" />
         </div>
-        <p className="text-[14px] font-medium text-white">Recording</p>
-        <div className="flex items-end gap-1">
+        <p className="text-[13px] font-semibold tracking-[-0.01em] text-white">Recording</p>
+        <div className="flex items-end gap-[3px]">
           {[
             { anim: "audio-bar-1", dur: "1.2s" },
             { anim: "audio-bar-2", dur: "0.9s" },
@@ -71,7 +73,7 @@ function SidebarWidget({ index }: { index: number }) {
           ].map((bar, i) => (
             <div
               key={i}
-              className="w-[3px] rounded-full"
+              className="w-[2px] rounded-full"
               style={{
                 height: "16px",
                 backgroundColor: "rgba(230,57,70,0.6)",
@@ -80,24 +82,26 @@ function SidebarWidget({ index }: { index: number }) {
             />
           ))}
         </div>
-        <p className="font-mono text-[13px] text-white/50">00:34:12</p>
+        <p className="font-mono text-[13px] font-bold tracking-tight text-white/40">00:34:12</p>
       </div>
     );
   }
   return (
     <div className="flex flex-col items-center gap-1.5 text-center">
       <div className="flex items-baseline gap-1">
-        <span className="font-serif text-[32px] font-bold leading-none text-white">4.2</span>
-        <span className="text-[16px] font-semibold text-red">hrs</span>
+        <span className="font-sans text-[32px] font-bold leading-none tracking-tight text-white">4.2</span>
+        <span className="text-[16px] font-bold tracking-tight text-red">hrs</span>
       </div>
-      <p className="text-[11px] text-white/50">saved this week</p>
-      <p className="text-[11px] font-semibold text-green-500">&#9650; 12%</p>
+      <p className="text-[11px] text-white/40">saved this week</p>
+      <p className="text-[11px] font-bold text-green-500">&#9650; 12%</p>
     </div>
   );
 }
 
 function ProductCard() {
   const [activeWidget, setActiveWidget] = useState(0);
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -106,73 +110,140 @@ function ProductCard() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    const cursorX = (x - 0.5) * 2; // -1 to 1
+    const cursorY = (y - 0.5) * 2; // -1 to 1
+    setTilt({ rx: -cursorY * 7, ry: cursorX * 7 });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setTilt({ rx: 0, ry: 0 });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 60 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.9, ease, delay: 0.8 }}
       className="w-full shrink-0 px-4 md:max-w-[576px] md:w-[52.8%] md:px-0"
+      style={{ perspective: "1000px" }}
     >
-      <motion.div
-        animate={{ y: [0, -6, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        whileHover={{ scale: 1.02 }}
-        className="glow-border transition-all duration-700 ease-in-out hover:shadow-[0_0_30px_rgba(230,57,70,0.2),0_0_60px_rgba(230,57,70,0.1),0_8px_40px_rgba(0,0,0,0.5)]"
+      <div
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
         style={{
-          boxShadow:
-            "0 0 20px rgba(230,57,70,0.1), 0 0 40px rgba(230,57,70,0.05), 0 8px 32px rgba(0,0,0,0.4)",
+          transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+          transformStyle: "preserve-3d",
+          transition: isHovered
+            ? "transform 0.1s ease-out"
+            : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
+        <motion.div
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="glow-border"
+          style={{
+            boxShadow:
+              "0 4px 24px rgba(0,0,0,0.3), 0 12px 48px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.04)",
+          }}
+        >
         <div className="glow-border-inner overflow-hidden">
 
         <div className="flex flex-col md:flex-row">
           {/* Left side — main content */}
-          <div className="p-5 md:p-7 md:w-[60%]">
+          <div className="p-6 md:w-[60%]">
             {/* Header */}
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-white/40">
+              <span className="text-[10px] font-semibold uppercase text-white/30" style={{ letterSpacing: "2.5px" }}>
                 Meeting Summary
               </span>
-              <div className="flex items-center gap-1.5 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+              <div className="flex items-center gap-1 rounded-full px-2 py-[2px]" style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.15)" }}>
+                <span className="relative flex" style={{ width: 5, height: 5 }}>
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-50" />
+                  <span className="relative inline-flex rounded-full bg-green-500" style={{ width: 5, height: 5 }} />
                 </span>
-                <span className="text-[11px] font-medium text-green-500">
+                <span className="text-[9px] font-semibold uppercase text-green-500" style={{ letterSpacing: "1.5px" }}>
                   Live
                 </span>
               </div>
             </div>
 
+            {/* Progress bar */}
+            <div className="mt-4 flex items-center gap-2">
+              <div className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-white/[0.04]">
+                <div
+                  className="relative h-full rounded-full"
+                  style={{ width: "78%", background: "linear-gradient(90deg, rgba(230,57,70,0.6), rgba(230,57,70,0.8))" }}
+                >
+                  <div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+                      animation: "progress-shimmer 3s ease-in-out infinite",
+                    }}
+                  />
+                </div>
+              </div>
+              <span className="text-[10px] text-white/20">78%</span>
+            </div>
+
             {/* Meeting info */}
-            <p className="mt-4 text-[17px] font-semibold text-foreground">
-              Q1 Planning — Product Standup
-            </p>
-            <p className="mt-1.5 text-xs text-muted/60">
+            <div className="mt-4 flex items-center gap-2">
+              <p className="text-[16px] font-semibold tracking-[-0.01em] text-white">
+                Q1 Planning — Product Standup
+              </p>
+              <span
+                className="shrink-0 rounded text-[8px] font-semibold uppercase"
+                style={{
+                  padding: "1px 6px",
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  color: "rgba(255,255,255,0.4)",
+                  letterSpacing: "1px",
+                }}
+              >
+                Product
+              </span>
+            </div>
+            <p className="mt-0.5 text-[12px] text-white/35">
               Today, 2:30 PM &middot; 45 min
             </p>
 
             {/* Divider */}
-            <div className="my-5 h-px bg-white/[0.05]" />
+            <div className="my-4 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)" }} />
 
             {/* Extracted items */}
-            <div className="space-y-1.5">
-              {items.map((item) => (
+            <div className="flex flex-col gap-1.5">
+              {items.map((item, idx) => (
                 <div
                   key={item.label}
-                  className={`group/item rounded-lg border-l-2 border-l-transparent px-3 py-2.5 transition-all duration-200 hover:bg-white/[0.05] ${item.borderColor}`}
+                  className="group/item rounded-lg border-l-2 border-l-transparent px-3 py-2.5 transition-all duration-200 hover:border-l-white/[0.08] hover:bg-white/[0.03]"
                 >
                   <div className="flex items-center gap-2">
                     <div
-                      className={`h-2 w-2 shrink-0 rounded-full ${item.color}`}
+                      className={`h-1.5 w-1.5 shrink-0 rounded-full ${item.color}`}
+                      style={{
+                        boxShadow: item.color === "bg-red"
+                          ? "0 0 6px rgba(230,57,70,0.3)"
+                          : item.color === "bg-green-500"
+                          ? "0 0 6px rgba(34,197,94,0.3)"
+                          : "0 0 6px rgba(245,158,11,0.3)",
+                      }}
                     />
                     <span
-                      className={`text-[11px] font-semibold uppercase tracking-wide ${item.textColor}`}
+                      className={`text-[9px] font-semibold uppercase ${item.textColor}`}
+                      style={{ letterSpacing: "2px" }}
                     >
                       {item.label}
                     </span>
                   </div>
-                  <p className="mt-0.5 pl-4 text-[14px] leading-[1.6] text-white/70 transition-colors duration-200 group-hover/item:text-white">
+                  <p className="mt-0.5 pl-[14px] text-[12px] leading-[1.5] text-white/[0.55] transition-colors duration-200 group-hover/item:text-white/70">
                     {item.text}
                   </p>
                 </div>
@@ -180,13 +251,19 @@ function ProductCard() {
             </div>
 
             {/* Delivery confirmation */}
-            <div className="mt-5 flex items-center gap-2 rounded-xl bg-green-500/[0.1] px-4 py-3">
+            <div
+              className="mt-4 flex items-center gap-2 rounded-xl px-3 py-2.5"
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(255,255,255,0.04)",
+              }}
+            >
               <svg
-                className="h-3.5 w-3.5 text-green-500"
+                className="h-3 w-3"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
+                stroke="rgba(34,197,94,0.5)"
+                strokeWidth={3}
               >
                 <path
                   strokeLinecap="round"
@@ -194,14 +271,14 @@ function ProductCard() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span className="text-xs font-medium text-green-500">
+              <span className="text-[12px] font-semibold" style={{ color: "rgba(34,197,94,0.6)" }}>
                 Delivered to 4 participants
               </span>
             </div>
           </div>
 
           {/* Right side — rotating sidebar (hidden on mobile) */}
-          <div className="hidden items-center justify-center border-t border-white/[0.06] p-4 md:flex md:w-[40%] md:border-l md:border-t-0 md:p-6">
+          <div className="hidden items-center justify-center p-4 md:flex md:w-[40%] md:p-6" style={{ borderLeft: "1px solid transparent", borderImage: "linear-gradient(180deg, transparent, rgba(255,255,255,0.06), transparent) 1" }}>
             <div className="relative h-[110px] w-full">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -220,6 +297,7 @@ function ProductCard() {
         </div>
         </div>
       </motion.div>
+      </div>
     </motion.div>
   );
 }
@@ -256,53 +334,49 @@ export default function Hero() {
           animation: "orbit-center 120s linear infinite",
         }}
       >
-        {/* Circle 1 — 500px */}
+        {/* Circle 1 — 600px */}
         <div
           className="absolute rounded-full"
           style={{
-            width: 500,
-            height: 500,
+            width: 600,
+            height: 600,
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             border: "1px solid rgba(255,255,255,0.06)",
           }}
         >
-          {/* Dot — top center */}
           <div className="absolute rounded-full" style={{ width: 6, height: 6, top: 0, left: "50%", transform: "translateX(-50%) translateY(-50%)", background: "rgba(255,255,255,0.2)" }} />
         </div>
 
-        {/* Circle 2 — 800px */}
+        {/* Circle 2 — 1000px */}
         <div
           className="absolute rounded-full"
           style={{
-            width: 800,
-            height: 800,
+            width: 1000,
+            height: 1000,
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             border: "1px solid rgba(255,255,255,0.06)",
           }}
         >
-          {/* Dot — right center */}
           <div className="absolute rounded-full" style={{ width: 6, height: 6, top: "50%", right: 0, transform: "translateX(50%) translateY(-50%)", background: "rgba(255,255,255,0.2)" }} />
-          {/* Dot — bottom-left */}
           <div className="absolute rounded-full" style={{ width: 6, height: 6, bottom: "15%", left: "8%", transform: "translate(-50%, 50%)", background: "rgba(255,255,255,0.2)" }} />
         </div>
 
-        {/* Circle 3 — 1200px */}
+        {/* Circle 3 — 1500px */}
         <div
           className="absolute rounded-full"
           style={{
-            width: 1200,
-            height: 1200,
+            width: 1500,
+            height: 1500,
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             border: "1px solid rgba(255,255,255,0.04)",
           }}
         >
-          {/* Dot — bottom-right */}
           <div className="absolute rounded-full" style={{ width: 6, height: 6, bottom: "18%", right: "6%", transform: "translate(50%, 50%)", background: "rgba(255,255,255,0.2)" }} />
         </div>
       </div>
@@ -345,6 +419,27 @@ export default function Hero() {
         }}
       />
 
+      {/* Corner plus shapes */}
+      <div className="pointer-events-none absolute inset-0 z-[1]">
+        {([
+          { top: 40, left: 40 },
+          { top: 40, right: 40 },
+          { bottom: 112, left: 40 },
+          { bottom: 112, right: 40 },
+        ] as const).map((pos, i) => (
+          <div
+            key={i}
+            className="absolute"
+            style={pos}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <line x1="12" y1="2" x2="12" y2="22" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+              <line x1="2" y1="12" x2="22" y2="12" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+            </svg>
+          </div>
+        ))}
+      </div>
+
       {/* Two-column layout */}
       <div className="relative z-[2] flex w-full flex-col items-center gap-10 px-6 md:flex-row md:justify-between md:gap-12 md:px-20 lg:px-28 xl:px-36">
         {/* Left — text content */}
@@ -358,23 +453,11 @@ export default function Hero() {
             variants={rise(0.1)}
             className="mb-8 flex w-fit items-center gap-2.5 rounded-full border border-white/[0.06] bg-white/[0.03] px-4 py-1.5 backdrop-blur-xl md:mb-10 md:gap-3 md:px-5 md:py-2"
           >
-            <div className="flex">
-              {["SB", "MK", "JC", "AP"].map((initials, i) => (
-                <div
-                  key={initials}
-                  className={`relative flex h-[28px] w-[28px] items-center justify-center rounded-full text-[10px] font-semibold md:h-[34px] md:w-[34px] md:text-[11px]${i > 0 ? " -ml-2.5 md:-ml-3" : ""}`}
-                  style={{
-                    zIndex: (i + 1) * 10,
-                    backgroundColor: "#1a1a1a",
-                    border: `1.5px solid rgba(230,57,70,${i === 3 ? "0.7" : "0.5"})`,
-                    color: "rgba(230,57,70,0.8)",
-                    boxShadow: i === 3
-                      ? "0 0 0 3px #050508, 0 0 10px rgba(230,57,70,0.15)"
-                      : "0 0 0 3px #050508",
-                  }}
-                >
-                  {initials}
-                </div>
+            <div className="flex gap-0.5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <svg key={i} width="12" height="12" viewBox="0 0 24 24" fill="#e63946">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
               ))}
             </div>
             <span className="text-xs text-muted">
@@ -418,16 +501,50 @@ export default function Hero() {
           >
             <a
               href="#waitlist"
-              className="group relative overflow-hidden rounded-full bg-red px-8 py-3.5 text-center text-sm font-medium text-white shadow-[0_0_30px_rgba(230,57,70,0.4)] transition-all duration-500 hover:shadow-[0_0_50px_rgba(230,57,70,0.6)]"
+              className="btn-shine rounded-full px-8 py-3.5 text-center text-sm font-medium text-white"
+              style={{
+                backgroundColor: "#e63946",
+                boxShadow: "0 0 20px rgba(230,57,70,0.3)",
+                transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#ef4454";
+                e.currentTarget.style.boxShadow = "0 0 40px rgba(230,57,70,0.5), 0 0 80px rgba(230,57,70,0.2)";
+                e.currentTarget.style.transform = "scale(1.05)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#e63946";
+                e.currentTarget.style.boxShadow = "0 0 20px rgba(230,57,70,0.3)";
+                e.currentTarget.style.transform = "scale(1)";
+              }}
             >
               <span className="relative z-10">Get Early Access</span>
-              <span className="absolute inset-0 bg-white/0 transition duration-500 group-hover:bg-white/[0.12]" />
             </a>
             <a
               href="#how-it-works"
-              className="rounded-full border border-white/[0.1] bg-white/[0.03] px-8 py-3.5 text-center text-sm font-medium text-foreground/80 backdrop-blur-xl transition-all duration-500 hover:border-white/[0.2] hover:bg-white/[0.06]"
+              className="btn-shine btn-shine-subtle rounded-full border px-8 py-3.5 text-center text-sm font-medium backdrop-blur-xl"
+              style={{
+                borderColor: "rgba(255,255,255,0.15)",
+                backgroundColor: "transparent",
+                color: "rgba(240,236,228,0.8)",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
+                e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.06)";
+                e.currentTarget.style.color = "#ffffff";
+                e.currentTarget.style.boxShadow = "0 0 20px rgba(255,255,255,0.05)";
+                e.currentTarget.style.transform = "scale(1.03)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "rgba(240,236,228,0.8)";
+                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.transform = "scale(1)";
+              }}
             >
-              See how it works
+              <span className="relative z-10">See how it works</span>
             </a>
           </motion.div>
         </motion.div>
@@ -436,34 +553,58 @@ export default function Hero() {
         <ProductCard />
       </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-8 left-1/2 z-[2] flex -translate-x-1/2 scale-75 flex-col items-center md:scale-100"
-      >
-        <span
-          className="mb-2 text-[10px] font-medium uppercase"
-          style={{ letterSpacing: "3px", color: "rgba(255,255,255,0.25)" }}
+      {/* Bottom stack: scroll indicator + logo ticker */}
+      <div className="absolute bottom-0 left-0 right-0 z-[2] flex flex-col items-center">
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2, duration: 1 }}
+          className="flex scale-75 flex-col items-center md:scale-100"
         >
-          Scroll
-        </span>
-        <svg width="24" height="36" viewBox="0 0 24 36" fill="none">
-          <rect x="1" y="1" width="22" height="34" rx="11" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
-          <line x1="12" y1="8" x2="12" y2="14" stroke="rgba(230,57,70,0.6)" strokeWidth="1.5" strokeLinecap="round" style={{ animation: "scroll-wheel 1.8s ease-in-out infinite" }} />
-        </svg>
-        <svg
-          className="mt-1"
-          width="16"
-          height="8"
-          viewBox="0 0 16 8"
-          fill="none"
-          style={{ animation: "bounce-down 1.5s ease-in-out infinite" }}
+          <svg width="24" height="36" viewBox="0 0 24 36" fill="none">
+            <rect x="1" y="1" width="22" height="34" rx="11" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+            <line x1="12" y1="8" x2="12" y2="14" stroke="rgba(230,57,70,0.6)" strokeWidth="1.5" strokeLinecap="round" style={{ animation: "scroll-wheel 1.8s ease-in-out infinite" }} />
+          </svg>
+          <svg
+            className="mt-1"
+            width="16"
+            height="8"
+            viewBox="0 0 16 8"
+            fill="none"
+            style={{ animation: "bounce-down 1.5s ease-in-out infinite" }}
+          >
+            <path d="M1 1L8 7L15 1" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </motion.div>
+
+        {/* 32px spacing */}
+        <div className="h-8" />
+
+        {/* Logo ticker */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 1 }}
+          className="w-full overflow-hidden border-t border-b border-white/[0.06] py-6"
         >
-          <path d="M1 1L8 7L15 1" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-      </motion.div>
+          <div className="flex w-max" style={{ animation: "ticker 25s linear infinite" }}>
+            {Array.from({ length: 4 }).flatMap((_, setIndex) =>
+              ["Notion", "Linear", "Figma", "Vercel", "Stripe", "Slack", "Loom", "Arc"].map(
+                (name, i) => (
+                  <span
+                    key={`${setIndex}-${i}`}
+                    className="shrink-0 px-[35px] text-[13px] font-medium uppercase"
+                    style={{ letterSpacing: "3px", color: "rgba(255,255,255,0.2)" }}
+                  >
+                    {name}
+                  </span>
+                )
+              )
+            )}
+          </div>
+        </motion.div>
+      </div>
     </section>
   );
 }

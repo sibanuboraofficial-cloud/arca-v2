@@ -14,44 +14,48 @@ const links = [
 
 const shapes = [
   // Triangle
-  <polygon key="tri" points="16,8 24,23 8,23" stroke="#e63946" strokeWidth="1.5" fill="none" strokeLinejoin="round" />,
+  <polygon key="tri" points="8,2 14,13 2,13" stroke="#e63946" strokeWidth="1.5" fill="none" strokeLinejoin="round" />,
   // Square
-  <rect key="sq" x="10" y="10" width="12" height="12" stroke="#e63946" strokeWidth="1.5" fill="none" rx="0.5" />,
+  <rect key="sq" x="2" y="2" width="12" height="12" stroke="#e63946" strokeWidth="1.5" fill="none" rx="0.5" />,
   // Diamond
-  <rect key="dia" x="10" y="10" width="12" height="12" stroke="#e63946" strokeWidth="1.5" fill="none" rx="0.5" transform="rotate(45 16 16)" />,
+  <rect key="dia" x="2" y="2" width="12" height="12" stroke="#e63946" strokeWidth="1.5" fill="none" rx="0.5" transform="rotate(45 8 8)" />,
 ];
 
-function Brandmark() {
+function Brandmark({ fast }: { fast?: boolean }) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setIndex((i) => (i + 1) % 3), 2500);
+    const id = setInterval(() => setIndex((i) => (i + 1) % 3), fast ? 600 : 2500);
     return () => clearInterval(id);
-  }, []);
+  }, [fast]);
 
   return (
-    <div className="flex h-8 w-8 items-center justify-center">
-      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <div className="relative flex h-8 w-8 items-center justify-center">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="absolute inset-0">
         <circle cx="16" cy="16" r="14.5" stroke="rgba(230,57,70,0.3)" strokeWidth="1.5" fill="none" />
-        <AnimatePresence mode="wait">
-          <motion.g
-            key={index}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            style={{ originX: "16px", originY: "16px" }}
-          >
-            {shapes[index]}
-          </motion.g>
-        </AnimatePresence>
       </svg>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: fast ? 0.15 : 0.4, ease: "easeOut" }}
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ transformOrigin: "center center" }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            {shapes[index]}
+          </svg>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [brandHovered, setBrandHovered] = useState(false);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 60);
@@ -71,9 +75,20 @@ export default function Navbar() {
       }`}
     >
       {/* Left — brandmark + wordmark */}
-      <a href="#" className="flex items-center gap-2.5">
-        <Brandmark />
-        <span className="text-lg font-bold tracking-[0.25em] text-foreground">
+      <a
+        href="#"
+        className="flex items-center gap-2.5"
+        onMouseEnter={() => setBrandHovered(true)}
+        onMouseLeave={() => setBrandHovered(false)}
+      >
+        <Brandmark fast={brandHovered} />
+        <span
+          className="text-lg font-bold tracking-[0.25em] text-foreground"
+          style={{
+            transition: "text-shadow 0.3s ease",
+            textShadow: brandHovered ? "0 0 10px rgba(230,57,70,0.3)" : "none",
+          }}
+        >
           ARCA
         </span>
       </a>
@@ -95,10 +110,23 @@ export default function Navbar() {
       <div className="flex items-center gap-4">
         <a
           href="#waitlist"
-          className="group relative hidden overflow-hidden rounded-full bg-red px-6 py-2.5 text-[13px] font-medium text-white transition-all duration-500 hover:shadow-[0_0_40px_rgba(230,57,70,0.35)] md:inline-flex"
+          className="btn-shine hidden rounded-full px-6 py-2.5 text-[13px] font-medium text-white md:inline-flex"
+          style={{
+            backgroundColor: "#e63946",
+            transition: "all 0.3s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#ef4454";
+            e.currentTarget.style.boxShadow = "0 0 20px rgba(230,57,70,0.3)";
+            e.currentTarget.style.transform = "scale(1.03)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "#e63946";
+            e.currentTarget.style.boxShadow = "none";
+            e.currentTarget.style.transform = "scale(1)";
+          }}
         >
           <span className="relative z-10">Get Early Access</span>
-          <span className="absolute inset-0 bg-white/0 transition-all duration-500 group-hover:bg-white/[0.12]" />
         </a>
 
         {/* Hamburger — visible below lg */}
